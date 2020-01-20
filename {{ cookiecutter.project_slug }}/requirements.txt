@@ -1,5 +1,7 @@
 flake8
 coverage
+pre-commit
+black
 {% if cookiecutter.get('use_pytest') == 'y' -%}
 pytest-runner
 {% endif %}
