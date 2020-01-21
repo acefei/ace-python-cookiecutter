@@ -30,13 +30,13 @@ init: .git/hooks/pre-commit ## initial dev environment
 	@git init
 	@$(RUN) pre-commit install
 
-###############################################	
-################ python targets ###############
-###############################################	
+#############################################	
+############## python targets ###############
+#############################################	
 lint: ## check style with flake8
 	flake8 {{ cookiecutter.project_slug }} tests
 
-test: ## run tests quickly with the default Python
+unittest: ## run tests quickly with the default Python
 {%- if cookiecutter.get('use_pytest') == 'y' %}
 	pytest
 {%- else %}
