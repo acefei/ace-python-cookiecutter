@@ -1,8 +1,8 @@
 .PHONY: clean clean-test clean-pyc clean-build help coverage lint test build-container container init
 .DEFAULT_GOAL := help
 
-IMAGE_NAME=pycookiecutter
-DOCKER_COMMON_ARGS=--rm -u $(shell id -u):$(shell id -g) -v $(PWD):/workspace -w /workspace $(IMAGE_NAME):latest
+IMAGE_NAME={{ cookiecutter.project_slug }}
+DOCKER_COMMON_ARGS=--rm -u $(shell id -u):$(shell id -g) -v $(CURDIR):/workspace -w /workspace $(IMAGE_NAME):latest
 RUN=docker run $(DOCKER_COMMON_ARGS)
 
 define PRINT_HELP_PYSCRIPT
@@ -20,7 +20,7 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 container: build-container ## enter dev mode container
-	docker run $(DOCKER_COMMON_ARGS) -it bash
+	docker run -it $(DOCKER_COMMON_ARGS) bash
 
 build-container: Dockerfile
 	docker build -t $(IMAGE_NAME) --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) $(<D)                       

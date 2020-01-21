@@ -1,4 +1,4 @@
 {
-  "project_name": "Python Project Name",
+  "project_name": "API service",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}"
 }
