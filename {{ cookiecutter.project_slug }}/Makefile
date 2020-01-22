@@ -1,8 +1,11 @@
 .PHONY: clean clean-test clean-pyc clean-build help coverage lint test build-container container init
 .DEFAULT_GOAL := help
 
-IMAGE_NAME={{ cookiecutter.project_slug }}
-DOCKER_COMMON_ARGS=--rm -u $(shell id -u):$(shell id -g) -v $(CURDIR):/workspace -w /workspace $(IMAGE_NAME):latest
+IMAGE_NAME := {{ cookiecutter.project_slug }}
+DOCKER_COMMON_ARGS := --rm -w /workspace -v $(CURDIR):/workspace $(IMAGE_NAME):latest
+ifneq (,$(wildcard $(HOME)/.gitconfig))
+DOCKER_COMMON_ARGS := -v $(HOME)/.gitconfig:/etc/gitconfig $(DOCKER_COMMON_ARGS)
+endif
 RUN=docker run $(DOCKER_COMMON_ARGS)
 
 define PRINT_HELP_PYSCRIPT
@@ -19,11 +22,13 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-container: build-container ## enter dev mode container
-	docker run -it $(DOCKER_COMMON_ARGS) bash
+container: Dockerfile ## enter dev mode container
+	docker build -t $(IMAGE_NAME) --target base $(<D)                       
+	docker run -it $(DOCKER_COMMON_ARGS)
 
-build-container: Dockerfile
+run: Dockerfile ## run python module 
 	docker build -t $(IMAGE_NAME) --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) $(<D)                       
+	docker run -it -u $(shell id -u):$(shell id -g) $(IMAGE_NAME)
 
 init: .git/hooks/pre-commit ## initial dev environment
 .git/hooks/pre-commit: .pre-commit-config.yaml build-container
